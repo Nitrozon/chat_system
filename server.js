@@ -41,6 +41,8 @@ app.get("/join/:rooms", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  let screenShareStream = null;
+
   socket.on("join-room", (roomId, id, myname) => {
     socket.join(roomId);
     socket.to(roomId).emit("user-connected", id, myname);
@@ -53,8 +55,18 @@ io.on("connection", (socket) => {
       socket.to(roomId).emit("AddName", myname);
     });
 
+    socket.on("screen-share", (stream) => {
+      screenShareStream = stream;
+      io.to(roomId).emit("screen-share-stream", stream.id);
+    });
+
     socket.on("disconnect", () => {
-      io.to(roomId).emit("user-disconnected", id);
+      socket.to(roomId).emit("user-disconnected", id);
+
+      if (screenShareStream && screenShareStream.id === socket.id) {
+        screenShareStream = null;
+        io.to(roomId).emit("screen-share-stop");
+      }
     });
   });
 });
