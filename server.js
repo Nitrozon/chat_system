@@ -1,8 +1,15 @@
 const express = require("express");
+const express = require('express');
+const http = require('http');
+const socketio = require('socket.io');
+
 const app = express();
-const server = require("http").Server(app);
+const server = http.createServer(app);
+const io = socketio(server);
+
+
 const { v4: uuidv4 } = require("uuid");
-const io = require("socket.io")(server);
+
 const { ExpressPeerServer } = require("peer");
 const url = require("url");
 const peerServer = ExpressPeerServer(server, { // Here we are actually defining our peer server that we want to host
@@ -40,11 +47,15 @@ app.get("/join/:rooms", (req, res) => { // When we reach here after we get redir
     res.render("room", { roomid: req.params.rooms, Myname: req.query.name }); // we render our ejs file and pass the data we need in it
 }); // i.e we need the roomid and the username
 
-io.on("connection", (socket) => { // When a user coonnects to our server
+io.on('connection', (socket) => {
+    socket.on('user-connected', (roomId, id, myname) => {
+        socket.to(roomId).broadcast.emit('user-connected', id, myname);
+
     socket.on("join-room", (roomId, id, myname) => { // When the socket a event 'join room' event
         socket.join(roomId); // Join the roomid
         socket.to(roomId).broadcast.emit("user-connected", id, myname);// emit a 'user-connected' event to tell all the other users
         // in that room that a new user has joined
+
 
         socket.on("messagesend", (message) => {
             console.log(message);
