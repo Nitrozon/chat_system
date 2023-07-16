@@ -1,0 +1,26 @@
+{
+  "name": "chatsystem",
+  "version": "0.0.1",
+  "description": "chat system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"error encountered\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "chatsystem"
+  },
+  "keywords": [
+    "chatsystem"
+  ],
+  "author": "Nitrozon",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "peer": "^1.0.0",
+    "socket.io": "^4.7.1",
+    "uuid": "^9.0.0"
+  }
+}
